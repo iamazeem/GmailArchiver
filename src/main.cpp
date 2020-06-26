@@ -1,8 +1,3 @@
-#include <cstdlib>
-
-#include "gmail_config.hpp"
-#include "gmail_service.hpp"
-
 /*
  *  GMail Archiver to archive email messages in encrypted format.
  *
@@ -11,7 +6,7 @@
  *  GitHub:     https://github.com/iamAzeem
  *  LinkedIn:   https://pk.linkedin.com/in/az33msajid
  *
- *  Syntax:     ./GmailTest <filename> <start-date> <end-date>
+ *  Syntax:     ./GmailArchiver <filename> <start-date> <end-date>
  *
  *  Arguments:
  *  1. <filename>   - output filename to save encrypted email messages
@@ -22,14 +17,19 @@
  *
  * */
 
+#include <cstdlib>
+
+#include "gmail_config.hpp"
+#include "gmail_service.hpp"
+
 int main( int argc, char *argv[] )
 {
     constexpr unsigned int REQUIRED_NO_OF_ARGS = 4;
 
     if ( argc != REQUIRED_NO_OF_ARGS )
     {
-        std::cout << "SYNTAX:  ./GmailTest <filename> <start-date> <end-date>\n"
-                  << "EXAMPLE: ./GmailTest  mybackup   2016/01/01  2016/01/15\n"
+        std::cout << "SYNTAX:  ./GmailArchiver <filename> <start-date> <end-date>\n"
+                  << "EXAMPLE: ./GmailArchiver  mybackup   2016/01/01  2016/01/15\n"
                   << "NOTE:    Date must be in the format [YYYY/MM/DD] e.g. 2016/01/30\n";
 
         return EXIT_FAILURE;

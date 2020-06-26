@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-/*** Minimal Logger ***/
+// Minimal Logger
 
-/* Logging Macros */
+// Logging Macros
 #define LOG_FMT(LVL) \
         LVL << " : "                    \
             << __FILE__     << " : "    \
@@ -21,4 +21,4 @@
 #define LOG_ERR() \
         std::clog << LOG_FMT( "[ERR]" )
 
-#endif /* LOGGER_HPP_ */
+#endif // LOGGER_HPP_

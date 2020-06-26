@@ -3,7 +3,7 @@
 
 #include <string>
 
-/*** Utilities for GmailTest ***/
+// Utilities for GmailArchiver
 
 namespace GmailArchiver {
 namespace Utils {
@@ -13,13 +13,13 @@ namespace Crypto {
     void encrypt ( std::string& str ) noexcept;
     void decrypt ( std::string& str ) noexcept;
 
-} /* Crypto */
+} // Crypto
 
-/* Utils functions */
+// Utils functions
 bool openBrowser( const std::string& uri ) noexcept;
 bool isValidDateFormat( const std::string& date ) noexcept;
 
-} /* Utils */
-} /* GmailTest */
+} // Utils
+} // GmailArchiver
 
-#endif /* GMAIL_UTILS_HPP_ */
+#endif // GMAIL_UTILS_HPP_

@@ -29,6 +29,6 @@ private:
     task_completion_event<bool>     _tceFlag;
 };
 
-} /* GmailTest */
+} // GmailArchiver
 
-#endif /* GMAIL_OAUTH2_HPP_ */
+#endif // GMAIL_OAUTH2_HPP_

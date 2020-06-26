@@ -35,6 +35,6 @@ private:
     oauth2_config           _oauthConfig;
 };
 
-} /* GmailTest */
+} // GmailArchiver
 
-#endif /* GMAIL_SERVICE_HPP_ */
+#endif // GMAIL_SERVICE_HPP_

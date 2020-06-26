@@ -6,7 +6,7 @@
 namespace GmailArchiver {
 namespace Utils {
 
-/*** Minimal XOR-based Crypto-lib ***/
+// Minimal XOR-based Crypto-lib
 namespace Crypto {
 
     static const char XOR_CRYPTO_CHAR = '@';
@@ -21,9 +21,9 @@ namespace Crypto {
         for ( auto& s : str ) { s ^= XOR_CRYPTO_CHAR; }
     }
 
-} /* Crypto */
+} // Crypto
 
-/* Utils functions */
+// Utils functions
 bool openBrowser( const std::string& uri ) noexcept
 {
 #if defined(__APPLE__)
@@ -51,5 +51,5 @@ bool isValidDateFormat( const std::string& date ) noexcept
     return !match.str().empty();
 }
 
-} /* Utils */
-} /* GmailTest */
+} // Utils
+} // GmailArchiver

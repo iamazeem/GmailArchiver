@@ -4,9 +4,9 @@
 namespace GmailArchiver {
 
 OAuth2::OAuth2( oauth2_config& oauthConfig )
-                :
-                _authCodeListener{ oauthConfig.redirect_uri() },
-                _oauthConfig{ oauthConfig }
+    :
+    _authCodeListener{ oauthConfig.redirect_uri() },
+    _oauthConfig{ oauthConfig }
 {
     _authCodeListener.support( methods::GET,
                                std::bind( &OAuth2::authCodeHandler, this, std::placeholders::_1 ) );
@@ -51,5 +51,5 @@ void OAuth2::authCodeHandler( http_request request ) noexcept
     }
 }
 
-} /* GmailTest */
+} // GmailArchiver
 

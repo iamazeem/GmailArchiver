@@ -16,7 +16,7 @@ using namespace web::http::client;
 using namespace web::http::oauth2::experimental;
 using namespace web::http::experimental::listener;
 
-/* Local Utility Function Declarations */
+// Local Utility Function Declarations
 static
 bool fetchMsgIdsList( http_client&        client,
                       std::queue<string>& queue,
@@ -28,7 +28,7 @@ bool fetchAndArchive( http_client&        client,
                       std::queue<string>& queue,
                       const string&       filename ) noexcept;
 
-/* GmailService class definitions */
+// GmailService class definitions
 GmailService::GmailService( const string& scope,
                             const string& clientId,
                             const string& clientSecret,
@@ -47,7 +47,7 @@ void GmailService::start( const string filename,
 {
     LOG_INF() << "GMail Archiver started!\n";
 
-    /* Validate output file, start and end dates */
+    // Validate output file, start and end dates
     if ( !validateArgs( filename, startDate, endDate ) )
     {
         return;
@@ -55,7 +55,7 @@ void GmailService::start( const string filename,
 
     LOG_INF() << "OAuth 2.0: Waiting for authentication and authorization...\n";
 
-    /* Authenticate and authorize current user */
+    // Authenticate and authorize current user
     if ( !isAuthorized() )
     {
         LOG_ERR() << "Authorization failed!\n";
@@ -66,16 +66,16 @@ void GmailService::start( const string filename,
 
     try
     {
-        /* Set up OAuth 2.0 configuration for HTTP client */
+        // Set up OAuth 2.0 configuration for HTTP client
         _clientConfig.set_oauth2( _oauthConfig );
 
-        /* Set up HTTP client */
+        // Set up HTTP client
         http_client client { RestAPIs::MESSAGES, _clientConfig };
 
-        /* Message IDs queue */
+        // Message IDs queue
         std::queue<string> msgIdsQueue;
 
-        /* Fetch message IDs in queue; fetch email message and archive */
+        // Fetch message IDs in queue; fetch email message and archive
         if ( fetchMsgIdsList( client, msgIdsQueue, startDate, endDate ) )
         {
             fetchAndArchive( client, msgIdsQueue, filename );
@@ -95,7 +95,7 @@ bool GmailService::validateArgs( const string filename,
 {
     LOG_INF() << "Validating arguments...\n";
 
-    /* Validate filename for existing files */
+    // Validate filename for existing files
     std::ifstream infile { filename };
     if( infile.good() )
     {
@@ -104,14 +104,14 @@ bool GmailService::validateArgs( const string filename,
         return false;
     }
 
-    /* Validate start date format */
+    // Validate start date format
     if ( !Utils::isValidDateFormat( startDate ) )
     {
         LOG_ERR() << "Invalid <start-date> format i.e. " << startDate << std::endl;
         return false;
     }
 
-    /* Validate end date format */
+    // Validate end date format
     if ( !Utils::isValidDateFormat( endDate ) )
     {
         LOG_ERR() << "Invalid <end-date> format i.e. " << endDate << std::endl;
@@ -129,14 +129,14 @@ bool GmailService::isAuthorized( void ) noexcept
     return Utils::openBrowser( authUri ) && oauth2.isAuthComplete();
 }
 
-/* Local Utility Function Definitions */
+// Local Utility Function Definitions
 static
 bool fetchMsgIdsList( http_client&        client,
                       std::queue<string>& queue,
                       const string&       startDate,
                       const string&       endDate ) noexcept
 {
-    /* Build URI with query for fetching messages IDs list */
+    // Build URI with query for fetching messages IDs list
     const string msgsQueryWithDate { R"(q="after:)" + startDate + R"( before:)" + endDate + R"(")" };
 
     uri_builder msgsListUriBuilder;
@@ -146,19 +146,19 @@ bool fetchMsgIdsList( http_client&        client,
 
     LOG_INF() << "Fetching and populating email message IDs list...\n";
 
-    /* Send request to fetch email messages IDs list */
+    // Send request to fetch email messages IDs list
     auto rspBody = client.request( methods::GET, msgsListUriBuilder.to_string() ).get().content_ready().get();
 
-    /* Create queue from the IDs; fetch all the IDs from next pages also */
+    // Create queue from the IDs; fetch all the IDs from next pages also
     bool isComplete { true };
     bool isNextPageAvailable { true };
 
     while ( isNextPageAvailable )
     {
-        /* Extract response JSON */
+        // Extract response JSON
         const auto jsonRsp = rspBody.extract_json().get();
 
-        /* Check if "messages" object exists in the JSON response */
+        // Check if "messages" object exists in the JSON response
         if ( !jsonRsp.has_field( "messages" ) )
         {
             LOG_ERR() << "No message found within specified time period!\n";
@@ -166,7 +166,7 @@ bool fetchMsgIdsList( http_client&        client,
             break;
         }
 
-        /* Fetch if there are messages in the response */
+        // Fetch if there are messages in the response
         const auto msgs = jsonRsp.at( "messages" );
         LOG_INF() << "Fetched " << msgs.as_array().size() << " message IDs!\n";
 
@@ -176,17 +176,17 @@ bool fetchMsgIdsList( http_client&        client,
             queue.push( msgId );
         }
 
-        /* Fetch next page if there is any */
+        // Fetch next page if there is any
         isNextPageAvailable = jsonRsp.has_field( "nextPageToken" );
         if ( isNextPageAvailable )
         {
             auto nextPageToken = jsonRsp.at( "nextPageToken" ).as_string();
 
-            /* Build URI for next page */
+            // Build URI for next page
             uri_builder nxtPageUriBuilder { msgsListUriBuilder };
             nxtPageUriBuilder.append_query( "pageToken=" + nextPageToken, true );
 
-            /* Send request to fetch next page */
+            // Send request to fetch next page
             rspBody = client.request( methods::GET, nxtPageUriBuilder.to_string() ).get().content_ready().get();
         }
     }
@@ -204,7 +204,7 @@ bool fetchAndArchive( http_client&        client,
                       std::queue<string>& queue,
                       const string&       filename ) noexcept
 {
-    /* Open new file to archive messages */
+    // Open new file to archive messages
     std::ofstream archiveFile { filename };
 
     if ( !archiveFile.is_open() )
@@ -215,40 +215,40 @@ bool fetchAndArchive( http_client&        client,
 
     LOG_INF() << "Starting to archive email messages... Please wait...\n";
 
-    /* Store opening bracket to start correct JSON array */
+    // Store opening bracket to start correct JSON array
     string startingBracket { "[" };
     Utils::Crypto::encrypt( startingBracket );
     archiveFile.write( startingBracket.c_str(), 1 );
 
-    /* Store closing bracket to complete correct JSON object */
+    // Store closing bracket to complete correct JSON object
     string endingBracket { "]" };
     Utils::Crypto::encrypt( endingBracket );
 
-    /* Encrypt comma separator to append messages in JSON array */
+    // Encrypt comma separator to append messages in JSON array
     string separatingComma { "," };
     Utils::Crypto::encrypt( separatingComma );
 
     try
     {
-        /* Iterate through IDs list and fetch email message */
+        // Iterate through IDs list and fetch email message
         for ( size_t i = 0; i < queue.size(); ++i )
         {
-            /* Build URI for current message ID */
+            // Build URI for current message ID
             uri_builder msgUriBuilder { "/" + queue.front() };
             msgUriBuilder.set_query( R"(fields=id,payload)", true );
 
-            /* Remove current message ID from list */
+            // Remove current message ID from list
             queue.pop();
 
-            /* Send request to fetch current message with ID and payload */
+            // Send request to fetch current message with ID and payload
             auto msgRsp = client.request( methods::GET, msgUriBuilder.to_string() ).get().content_ready().get();
             auto msgRspAsString = msgRsp.extract_string().get();
 
-            /* Write current message to archive file */
+            // Write current message to archive file
             Utils::Crypto::encrypt( msgRspAsString );
             archiveFile.write( msgRspAsString.c_str(), msgRspAsString.size() );
 
-            /* Append a comma after each message; but not with the last one */
+            // Append a comma after each message; but not with the last one
             if ( (queue.size() > 1) && (i != queue.size() - 1) )
             {
                 archiveFile.write( separatingComma.c_str(), 1 );
@@ -264,10 +264,9 @@ bool fetchAndArchive( http_client&        client,
         return false;
     }
 
-    /* Write ending bracket to complete the JSON array */
+    // Write ending bracket to complete the JSON array
     archiveFile.write( endingBracket.c_str(), 1 );
 
-    /* Close archive file */
     archiveFile.close();
 
     LOG_INF() << "Archive [" << filename << "] created successfully!\n";
@@ -275,4 +274,4 @@ bool fetchAndArchive( http_client&        client,
     return true;
 }
 
-} /* GmailTest */
+} // GmailArchiver
